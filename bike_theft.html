@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Steven Liu" />
+
+
+<title>Assignment1 - EDA: Bicycle Thefts GTA</title>
+
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="site_libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="site_libs/leaflet-binding-2.1.1/leaflet.js"></script>
+<script src="site_libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="site_libs/leaflet-providers-plugin-2.1.1/leaflet-providers-plugin.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data Science Projects Demo</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="bike_theft.html">Bike Theft</a>
+</li>
+<li>
+  <a href="life_expectancy.html">Life Expectancy vs Alcohol consumption</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Assignment1 - EDA: Bicycle Thefts GTA</h1>
+<h4 class="author">Steven Liu</h4>
+
+</div>
+
+
+<div
+id="goal-when-and-where-are-bikes-most-likely-to-be-reported-as-stolen-in-toronto"
+class="section level1">
+<h1>GOAL: When and where are bikes most likely to be reported as stolen
+in Toronto?</h1>
+</div>
+<div id="step-1" class="section level1">
+<h1>Step 1</h1>
+<p>First, read in the data. Update the missing data identifiers to NA.
+Check for import issues (dimensions, headers, footers, variable names
+and variable types). Check for any data issues (import issues, missing
+values, data errors) particularly in the key variable we are analyzing.
+Make sure you write up a summary of all of your findings.</p>
+<p>First, we will read in the data</p>
+<pre class="r"><code># Read the data into bt
+  bt &lt;- data.table::fread(&quot;Bicycle_Thefts.csv&quot;)</code></pre>
+<p>Then, we will check the dimension and import issues.</p>
+<pre class="r"><code># Check the dimension
+dim(bt)
+# Check the head of the data
+head(bt)
+# Check the tail of the data
+tail(bt)
+# Check variable name and type
+str(bt)</code></pre>
+<p>After, we will check any data issues (We will focus on city,
+Occurrence_Year, Occurrence_Month, Occurrence_DayOfMonth,
+Occurrence_DayOfWeek, Occurrence_Hour, Longitude, NeighbourhoodName,
+Premises_Type, Status, Bike_Type, Bike_Color).</p>
+<pre class="r"><code># Look at summary of variables
+# Summary of City
+table(bt$City)
+# Summary of Year
+summary(bt$Occurrence_Year)
+# Summary of Month
+table(bt$Occurrence_Month)
+# Summary of DayOfMonth
+table(bt$Occurrence_DayOfMonth)
+# Summary of DayOfWeek
+table(bt$Occurrence_DayOfWeek)
+# Summary of Hour
+table(bt$Occurrence_Hour)
+# Summary of Longtitude
+summary(bt$Longitude)
+# Summary of Lattitude
+summary(bt$Latitude)
+# Summary of NeighbourhoodName
+table(bt$NeighbourhoodName)
+# Summary of Premises_Type
+table(bt$Premises_Type)
+# Summmary of Status
+table(bt$Status)
+# Summary of Bike_Type
+table(bt$Bike_Type)
+# Summary of Bike_Color
+table(bt$Bike_Colour)</code></pre>
+<p>We will now handle with data issue: replace all data identifier to
+NA.</p>
+<pre class="r"><code># Update all missing value identifiers to NA
+  bt &lt;- bt %&gt;% 
+    mutate(Longitude = ifelse(Longitude &gt;= 0, NA, Longitude)) %&gt;% 
+    mutate(Latitude = ifelse(Latitude &lt;= 0, NA, Latitude)) %&gt;% 
+    mutate(City = ifelse(City == &quot;NSA&quot;, NA, City)) %&gt;% 
+    mutate(NeighbourhoodName = ifelse(NeighbourhoodName == &quot;NSA&quot;, NA, NeighbourhoodName)) %&gt;% 
+    mutate(Status = ifelse(Status == &quot;UNKNOWN&quot;, NA, Status)) %&gt;% 
+    mutate(Bike_Colour = ifelse(Bike_Colour == &quot;NULL&quot; | Bike_Colour == &quot;18&quot; |
+                                Bike_Colour == &quot;&quot;, NA, Bike_Colour))</code></pre>
+<p>See if there exists more data issues.</p>
+<pre class="r"><code># Summary of New Longitutde and Latitude
+summary(bt$Longitude)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
+##  -79.82  -79.42  -79.39  -79.39  -79.37  -78.86     303</code></pre>
+<pre class="r"><code>summary(bt$Latitude)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
+##   43.32   43.65   43.66   43.67   43.68   43.91     303</code></pre>
+<p>Summary of Step 1: At very beginning, we have read the Bicycle Thefts
+data and stored it into a data table <span
+class="math inline">\(bt\)</span>. We found our data set contains 30154
+observations of 35 variables. By looking at the head and tail of our
+data, all data points seems reasonable (with no importing issues).
+Moving closely to the summary of variables (we mainly focus on City,
+Occurrence_Year, Occurrence_Month, Occurrence_DayOfMonth,
+Occurrence_DayOfWeek, Occurrence_Hour, Longitude, NeighbourhoodName,
+Premises_Type, Status, Bike_Colour, Bike_Type), we found that the
+maximum of Longitude and minimum of Latitude is zero, which is not
+inside Toronto area. We believe these zero values are the missing data
+identifiers, therefore replace all of them with NA. We also found on the
+website that NSA is the missing data identifiers for City &amp;
+NeighbourhoodName, and UNKOWN is another missing data identifiers for
+Status. Therefore, we replace all of them with NA. After that, we did
+not notice any more data errors within our main variables, as there
+isn’t any sign of single point being significantly varied from all other
+points.</p>
+<div style="page-break-after: always;"></div>
+</div>
+<div id="step-2" class="section level1">
+<h1>Step 2</h1>
+<p>Clean the data – keep only necessary data columns and change the
+names of the key variables so that they are easier to identify. Change
+the type of key variables from string to factor as appropriate. Identify
+any outlier reports, and justify how you handle them.</p>
+<p>We will keep rows without NA, report as STOLEN, within Toronto and
+only necessary columns</p>
+<pre class="r"><code># Select Proper Rows and Columns
+bt &lt;- bt %&gt;% select(OBJECTID, City, Occurrence_Year , Occurrence_Month , 
+                    Occurrence_DayOfMonth , Occurrence_DayOfWeek , 
+                    Occurrence_Hour , Longitude , Latitude, NeighbourhoodName 
+                    , Premises_Type, Bike_Colour, Bike_Type, Status) %&gt;%  
+                    drop_na() %&gt;% 
+                    filter(Status == &quot;STOLEN&quot;) %&gt;% 
+                    filter(City == &quot;Toronto&quot;)</code></pre>
+<p>We will rename some columns to make life easier</p>
+<pre class="r"><code># Column Rename
+bt &lt;- bt %&gt;% mutate(id = OBJECTID, year = Occurrence_Year, 
+                    month = Occurrence_Month, 
+                    dayofmonth = Occurrence_DayOfMonth, 
+                    dayofweek = Occurrence_DayOfWeek, 
+                    hour = Occurrence_Hour, 
+                    latitude = Latitude, 
+                    longitude = Longitude, 
+                    neighbourhood = NeighbourhoodName, 
+                    premises = Premises_Type,
+                    color = Bike_Colour,
+                    type = Bike_Type) %&gt;% 
+  select(id, year, month, dayofmonth, dayofweek, hour, latitude,
+         longitude, neighbourhood, premises, color, type)</code></pre>
+<p>Check which can apply string to factor change</p>
+<pre class="r"><code>str(bt)</code></pre>
+<p>Apply Change</p>
+<pre class="r"><code># Change string to factor
+bt &lt;- as.data.frame(unclass(bt), stringsAsFactors = TRUE)</code></pre>
+<p>Identify ourliers</p>
+<pre class="r"><code># Boxplot of Lattitude and Longitude to identify outliers
+par(mfrow= c(1, 2))
+boxplot(bt$latitude, ylab = &quot;Latitude&quot;, main = &quot;Boxplot for lattitude&quot;)
+boxplot(bt$longitude, ylab = &quot;Longitude&quot;, main = &quot;Boxplot for Longitude&quot;)</code></pre>
+<p><img src="bike_theft_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Summary of Step 2: Initially, we select OBJECTID, City,
+Occurrence_Year, Occurrence_Month, Occurrence_DayOfMonth,
+Occurrence_DayOfWeek, Occurrence_Hour, Longitude, Latitude,
+NeighbourhoodName, Premises_Type, Bike_Colour, Bike_Type, and Status as
+all necessary variables to solve the research question. Then, as
+required by the research question, we only select rows which are inside
+of (City=) Toronto and report as (Status=) STOLEN. And we remove any
+observations with NA in at least one of our necessary variables.
+Furthermore, we rename some of the key variables and convert all string
+to factor to obtain a clean and valid data set.</p>
+<p>We plotted two boxplots of Lattitude and Longitude to see if there
+exists outlines in our clean data set. It turns out that no observation
+is far away from the others. Therefore, we believe there is no more
+outliers in our clean dataset. In fact, all outliers are outside of
+Toronto, and they have already been filtered out from our clean data
+set.</p>
+<div style="page-break-after: always;"></div>
+</div>
+<div id="step-3" class="section level1">
+<h1>Step 3</h1>
+<p>Explore the main question of interest. Calculate summary statistics
+for each season (e.g. means, medians, variances) and then conduct some
+basic analyses that enable you to compare across
+winter/spring/summer/fall (e.g. t-test, linear regression). Be sure to
+show the results and write up explanations of what you observe in these
+data.</p>
+<p>Add a new variable season</p>
+<pre class="r"><code>bt &lt;- bt %&gt;% mutate(season = case_when(
+    month %in% c(&quot;November&quot;,&quot;December&quot;,&quot;January&quot;) ~ &quot;Winter&quot;, 
+    month %in% c(&quot;February&quot;,&quot;March&quot;,&quot;April&quot;) ~ &quot;Spring&quot;,
+    month %in% c(&quot;May&quot;,&quot;June&quot;,&quot;July&quot;) ~ &quot;Summer&quot;, TRUE ~ &quot;Fall&quot;))
+# Change string to factor
+bt &lt;- as.data.frame(unclass(bt), stringsAsFactors = TRUE)</code></pre>
+<p>We want to group our data by season,day and hour, that is, we want to
+know how many bike was stolen per hour for each season.</p>
+<pre class="r"><code>bt_season &lt;- bt %&gt;% group_by(season, dayofmonth, hour) %&gt;% summarise(count = n())</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;season&#39;, &#39;dayofmonth&#39;.
+## You can override using the `.groups` argument.</code></pre>
+<p>We want to calculate the mean, median, sd amount of bike being stolen
+per hour in each month</p>
+<pre class="r"><code>  bt_season %&gt;% group_by(season) %&gt;% summarise(mean = mean(count), 
+                                               median = median(count),
+                                               sd = sd(count))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["season"],"name":[1],"type":["fct"],"align":["left"]},{"label":["mean"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["median"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"Fall","2":"12.728011","3":"13","4":"6.681521"},{"1":"Spring","2":"5.035661","3":"5","4":"3.089234"},{"1":"Summer","2":"14.697011","3":"15","4":"7.585471"},{"1":"Winter","2":"4.454681","3":"4","4":"3.088686"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>We build linear regression model to test whether bike stolen per hour
+depends on season</p>
+<pre class="r"><code>model &lt;- lm(count~season, data = bt_season)
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = count ~ season, data = bt_season)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -13.697  -3.036  -0.455   3.272  34.545 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   12.7280     0.2057  61.885  &lt; 2e-16 ***
+## seasonSpring  -7.6923     0.2979 -25.821  &lt; 2e-16 ***
+## seasonSummer   1.9690     0.2912   6.763 1.64e-11 ***
+## seasonWinter  -8.2733     0.2979 -27.771  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5.591 on 2817 degrees of freedom
+## Multiple R-squared:  0.3975, Adjusted R-squared:  0.3969 
+## F-statistic: 619.6 on 3 and 2817 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>We will look deeper into amount bike stolen at each hour for each
+season</p>
+<pre class="r"><code>ggplot(bt_season, aes(y=count, x=hour)) + geom_point() + facet_wrap(~season) + 
+  geom_smooth(aes(color = season), show.legend = FALSE) + 
+  labs(title = &quot;Distribution of the number of bikes being stolen across each hour in each season&quot;) </code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="bike_theft_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>Summary of Step 3: To further investigate when bike is more likely to
+be stolen, we have break our data into four categories. We have group
+December, January, February into Winter; March, April, May into Spring;
+June, July, August into Summer; and September, October, November into
+Fall. For each season, we are interesting the amount of bike being
+stolen per hour to decide if bike stolen depends on the season.
+Therefore, we group our data by season and day+hour. As a summary, we
+found that the average number of bike being stolen per hour for winter,
+spring, summer, fall is 4.45, 5.03, 14.69, 12.72 receptively. By fitting
+a linear regression model, we found that the <span
+class="math inline">\(p\)</span> value for each coefficient is close to
+zero, which saying they are significantly different with each others.
+Looking more closely at the distribution of number of bikes being stolen
+across each hour in each season, we found that 17-19 pm is the peak.
+Therefore, we might say Bikes are more likely to be stolen in
+Fall/Summer at 17-19 pm. </p>
+</div>
+<div id="step-4" class="section level1">
+<h1>Step 4</h1>
+<p>Create exploratory plots (boxplots, histograms, time series) of which
+neighbourhoods and time of day bikes were reported stolen from.</p>
+<p>As there are too many neighborhoods, we will firstly display the 10
+neighbourhoods with Highest Number of Stolen Bike by barplot.</p>
+<pre class="r"><code>nb &lt;- bt %&gt;% group_by(neighbourhood) %&gt;% 
+  summarise(count = n()) %&gt;% arrange(desc(count))
+ggplot(data = head(nb, 10), aes(x=neighbourhood, y = count,
+                                fill=neighbourhood)) + 
+  geom_bar(stat=&quot;identity&quot;) + 
+  scale_x_discrete(guide = guide_axis(check.overlap = TRUE)) + 
+  labs(title = &quot;10 Neighbourhoods with the Highest Number of Stolen Bike&quot;) +
+  theme(plot.title = element_text(hjust = 0.5))</code></pre>
+<p><img src="bike_theft_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>Since we are interesting in the amount of bike stolen by hour, we
+will visualize this distribution by making anther barplot.</p>
+<pre class="r"><code>hr &lt;- bt %&gt;% group_by(hour) %&gt;% 
+  summarise(count = n())
+ggplot(data = hr, aes(x=hour, y = count)) + 
+  geom_bar(stat=&quot;identity&quot;, fill=&quot;orange&quot;) +
+  labs(title=&quot;Amount of Bike Stolen by Hour&quot;) + 
+  theme(plot.title = element_text(hjust = 0.5))</code></pre>
+<p><img src="bike_theft_files/figure-html/unnamed-chunk-17-1.png" width="480" /></p>
+<p>Now, we will look at the time series of the number of stolen bike for
+each of those top neighbouhood</p>
+<pre class="r"><code>nb_h &lt;- bt %&gt;% filter(neighbourhood %in% head(nb, 9)$neighbourhood) %&gt;% 
+  group_by(neighbourhood, hour) %&gt;% 
+  summarise(count = n(), .groups = &quot;keep&quot;)
+ggplot(data = nb_h, aes(x=hour, y=count, color=neighbourhood)) +
+  geom_line() + facet_wrap(~neighbourhood) + 
+  labs(title = 
+         &quot;Time series of Number of Bike stolen at the Top 9 neighbourhood&quot;) +
+  theme(plot.title = element_text(hjust = 0.5), legend.position = &quot;none&quot;)</code></pre>
+<p><img src="bike_theft_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(data=nb_h, aes(x = hour, y = count, color = neighbourhood)) +
+  geom_line() + 
+  labs(title = 
+         &quot;Time series of Number of Bike stolen at the Top 9 neighbourhood&quot;) +
+  theme(plot.title = element_text(hjust = 0.5), legend.position = &quot;none&quot;)</code></pre>
+<p><img src="bike_theft_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<div style="page-break-after: always;"></div>
+</div>
+<div id="step-5" class="section level1">
+<h1>Step 5</h1>
+<p>Create a basic map in leaflet() that shows the locations of all
+stolen unicycles (and their colours).</p>
+<pre class="r"><code># Click the Markers to see their colours!
+unbt &lt;- bt %&gt;% filter(type==&quot;UN&quot;)
+unbt &lt;- unbt %&gt;% mutate(colorc = case_when(
+  color == &#39;RED&#39; ~ &quot;red&quot;, 
+  color == &quot;GRY&quot; ~ &quot;grey&quot;, 
+  color == &quot;BLK&quot; ~ &quot;black&quot;,
+  color == &quot;WHI&quot; ~ &quot;white&quot;,
+  color == &quot;GRN&quot; ~ &quot;green&quot;, 
+  TRUE ~ &quot;brown&quot;
+))
+leaflet(unbt) %&gt;% 
+  addProviderTiles(&#39;OpenStreetMap&#39;) %&gt;% 
+  addMarkers(lng = ~longitude, lat = ~latitude, popup = ~color ) %&gt;% 
+  addCircles(lng = ~longitude, lat = ~latitude, fillColor = ~colorc, fillOpacity = 1, radius = 500)</code></pre>
+<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-8319f0371d0143ab2286" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-8319f0371d0143ab2286">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["OpenStreetMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addMarkers","args":[[43.64033271,43.60076237,43.63517525,43.65381073,43.62296949,43.64668181,43.67218781,43.66377121,43.75650092],[-79.43788356,-79.50523674,-79.40128939,-79.41732195,-79.48117359,-79.40653598,-79.40600258,-79.46111499,-79.40653241],null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},["RED","GRY","RED","BLK","WHI","GRN","BLK","BLK","GRY"],null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircles","args":[[43.64033271,43.60076237,43.63517525,43.65381073,43.62296949,43.64668181,43.67218781,43.66377121,43.75650092],[-79.43788356,-79.50523674,-79.40128939,-79.41732195,-79.48117359,-79.40653598,-79.40600258,-79.46111499,-79.40653241],500,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":["red","grey","red","black","white","green","black","black","grey"],"fillOpacity":1},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null,null]}],"limits":{"lat":[43.60076237,43.75650092],"lng":[-79.50523674,-79.40128939]}},"evals":[],"jsHooks":[]}</script>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Assignment 2 - Data Viz, Wrangling and Advanced Regression</title>
+
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Data Science Projects Demo</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="bike_theft.html">Bike Theft</a>
+</li>
+<li>
+  <a href="life_expectancy.html">Life Expectancy vs Alcohol consumption</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Assignment 2 - Data Viz, Wrangling and
+Advanced Regression</h1>
+
+</div>
+
+
+<div id="part-1-data-wrangling" class="section level2">
+<h2>Part 1 Data Wrangling</h2>
+<pre class="r"><code># Read data
+le &lt;- read.csv(&quot;life expectancy of women.csv&quot;)
+ac &lt;- read.csv(&quot;alcohol consumption.csv&quot;)</code></pre>
+<ol style="list-style-type: decimal">
+<li>Put the life expectancy data in “tidy” format by creating a new
+column “Sex”. You may want to use pivot_longer function from the tidyr
+package.</li>
+</ol>
+<pre class="r"><code>le &lt;- le %&gt;%
+  pivot_longer(
+    cols = starts_with(&quot;Life&quot;),
+    names_to = &quot;Sex&quot;,
+    values_to = &quot;Life_Expectation&quot;,
+    values_drop_na = TRUE
+  ) %&gt;% mutate(Sex = case_when(grepl(&quot;female&quot;, Sex, fixed=TRUE) 
+                               ~ &quot;Female&quot;, TRUE ~ &quot;Male&quot;))</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Filter the alcohol consumption data to exclude rows with data for
+“Both sexes”.</li>
+</ol>
+<pre class="r"><code>ac &lt;- ac %&gt;% filter(Sex != &quot;Both sexes&quot;)</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>For convenience, you may rename any variables which have complicated
+names.</li>
+</ol>
+<pre class="r"><code># We will select variable we are interested in at this step
+ac &lt;- ac %&gt;% mutate(Alcohol = Alcohol.total.per.capita..15...consumption.in.liters..numeric.) %&gt;% 
+  select(Country, Country.Code, Year, Sex, Alcohol)
+
+le &lt;- le %&gt;% mutate(Country = Entity, Country.Code = Code) %&gt;% 
+  select(Country, Country.Code, Year, Sex, Life_Expectation)
+
+# Check the data
+head(ac, 1)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Country.Code"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Year"],"name":[3],"type":["int"],"align":["right"]},{"label":["Sex"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Alcohol"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"Bangladesh","2":"BGD","3":"2019","4":"Female","5":"0","_rn_":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>head(le, 1)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Country.Code"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Year"],"name":[3],"type":["int"],"align":["right"]},{"label":["Sex"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Life_Expectation"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"AFG","3":"1950","4":"Female","5":"28.4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<ol start="4" style="list-style-type: decimal">
+<li>Merge these datasets by country name and year</li>
+</ol>
+<pre class="r"><code># We also want to merge by sex
+dat &lt;- merge(x = ac,
+             y = le,
+             by.x=c(&quot;Country&quot;,&quot;Year&quot;, &quot;Sex&quot;),
+             by.y=c(&quot;Country&quot;,&quot;Year&quot;, &quot;Sex&quot;))</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Create a summary tables showing the average and sd of life
+expectancy and alcohol consumption by year, and sex.</li>
+</ol>
+<pre class="r"><code>dat %&gt;% group_by(Year, Sex) %&gt;% summarise(mean_le = mean(Life_Expectation),
+                                          sd_le = sd(Life_Expectation),
+                                          mean_ac = mean(Alcohol),
+                                          sd_ac = sd(Alcohol))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;Year&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Year"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sex"],"name":[2],"type":["chr"],"align":["left"]},{"label":["mean_le"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["sd_le"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["mean_ac"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["sd_ac"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"2000","2":"Female","3":"69.14036","4":"10.571545","5":"2.523819","6":"2.164264"},{"1":"2000","2":"Male","3":"64.09157","4":"9.526031","5":"9.235145","6":"7.007668"},{"1":"2001","2":"Female","3":"69.44096","4":"10.645375","5":"2.523819","6":"2.164264"},{"1":"2001","2":"Male","3":"64.38735","4":"9.517500","5":"9.235145","6":"7.007668"},{"1":"2002","2":"Female","3":"69.71325","4":"10.525493","5":"2.518373","6":"2.159343"},{"1":"2002","2":"Male","3":"64.67289","4":"9.443737","5":"9.205151","6":"6.992798"},{"1":"2003","2":"Female","3":"69.97952","4":"10.466718","5":"2.518380","6":"2.146989"},{"1":"2003","2":"Male","3":"64.95482","4":"9.358519","5":"9.192428","6":"6.937405"},{"1":"2004","2":"Female","3":"70.26145","4":"10.352038","5":"2.534066","6":"2.126814"},{"1":"2004","2":"Male","3":"65.28072","4":"9.277675","5":"9.236566","6":"6.852761"},{"1":"2005","2":"Female","3":"70.67410","4":"10.235689","5":"2.568946","6":"2.141408"},{"1":"2005","2":"Male","3":"65.61988","4":"9.186790","5":"9.332512","6":"6.862059"},{"1":"2006","2":"Female","3":"71.08133","4":"10.076397","5":"2.602223","6":"2.159834"},{"1":"2006","2":"Male","3":"65.98976","4":"9.091239","5":"9.415946","6":"6.897050"},{"1":"2007","2":"Female","3":"71.45179","4":"9.862309","5":"2.666607","6":"2.204951"},{"1":"2007","2":"Male","3":"66.36250","4":"8.897686","5":"9.623006","6":"7.063432"},{"1":"2008","2":"Female","3":"71.78690","4":"9.729094","5":"2.628405","6":"2.169372"},{"1":"2008","2":"Male","3":"66.72679","4":"8.811584","5":"9.498554","6":"6.967984"},{"1":"2009","2":"Female","3":"72.17024","4":"9.494250","5":"2.589732","6":"2.104763"},{"1":"2009","2":"Male","3":"67.11310","4":"8.632778","5":"9.402869","6":"6.799430"},{"1":"2010","2":"Female","3":"72.43036","4":"9.476348","5":"2.558833","6":"2.043933"},{"1":"2010","2":"Male","3":"67.42976","4":"8.645822","5":"9.328167","6":"6.627876"},{"1":"2011","2":"Female","3":"72.88690","4":"9.043041","5":"2.573530","6":"2.030884"},{"1":"2011","2":"Male","3":"67.84762","4":"8.360751","5":"9.399952","6":"6.609517"},{"1":"2012","2":"Female","3":"73.19643","4":"8.772206","5":"2.574446","6":"2.021947"},{"1":"2012","2":"Male","3":"68.20714","4":"8.196615","5":"9.408821","6":"6.597133"},{"1":"2013","2":"Female","3":"73.52976","4":"8.599322","5":"2.565054","6":"2.001680"},{"1":"2013","2":"Male","3":"68.50298","4":"8.075619","5":"9.392661","6":"6.546354"},{"1":"2014","2":"Female","3":"73.83810","4":"8.482746","5":"2.545667","6":"1.973115"},{"1":"2014","2":"Male","3":"68.75774","4":"8.014385","5":"9.340637","6":"6.457291"},{"1":"2015","2":"Female","3":"74.04524","4":"8.259147","5":"2.534435","6":"1.953997"},{"1":"2015","2":"Male","3":"68.97917","4":"7.839031","5":"9.318810","6":"6.406935"},{"1":"2016","2":"Female","3":"74.39524","4":"8.108581","5":"2.522512","6":"1.934788"},{"1":"2016","2":"Male","3":"69.27083","4":"7.707702","5":"9.292619","6":"6.362486"},{"1":"2017","2":"Female","3":"74.62202","4":"7.952263","5":"2.514018","6":"1.917295"},{"1":"2017","2":"Male","3":"69.48988","4":"7.622961","5":"9.273512","6":"6.321538"},{"1":"2018","2":"Female","3":"74.85833","4":"7.835092","5":"2.507702","6":"1.912398"},{"1":"2018","2":"Male","3":"69.70655","4":"7.547424","5":"9.257310","6":"6.312783"},{"1":"2019","2":"Female","3":"75.05893","4":"7.734047","5":"2.507702","6":"1.912398"},{"1":"2019","2":"Male","3":"69.90417","4":"7.478139","5":"9.257310","6":"6.312783"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<ol start="6" style="list-style-type: decimal">
+<li>Create a new categorical variable named “consumption_level” using
+the alcohol total per capita variable. For female and male separately,
+calculate the quartiles of alcohol consumption. Categorize consumption
+level as low (0-q1) medium (q1-q3), and high (q3+). To make sure the
+variable is rightly coded, create a summary table that contains the
+minimum total alcohol consumption, maximum alcohol consumption, and
+number of observations for each category.</li>
+</ol>
+<pre class="r"><code>female &lt;- quantile(dat[dat$Sex==&quot;Female&quot;,]$Alcohol, probs=c(0.25, 0.75))
+male &lt;- quantile(dat[dat$Sex==&quot;Male&quot;,]$Alcohol, probs=c(0.25, 0.75))
+dat &lt;- dat %&gt;% mutate(consumption_level = 
+                        case_when(Sex==&quot;Female&quot; &amp; Alcohol&lt;female[1]~&quot;low&quot;,
+                                  Sex==&quot;Male&quot; &amp; Alcohol&lt;male[1]~&quot;low&quot;,
+                                  Sex==&quot;Female&quot; &amp; Alcohol&gt;=female[1] &amp; Alcohol&lt;female[2]~&quot;median&quot;,
+                                  Sex==&quot;Male&quot; &amp; Alcohol&gt;=male[1] &amp; Alcohol&lt;male[2]~&quot;median&quot;,
+                                  TRUE ~ &quot;high&quot;))</code></pre>
+</div>
+<div id="part-2-looking-at-data" class="section level2">
+<h2>Part 2 Looking At Data</h2>
+<p>The primary questions of interest are: 1. What is the association
+between life expectancy and alcohol consumption? 2. Does this
+association differ by Sex? 3. How has life expectancy and alcohol
+consumption changed over time?</p>
+<p>Follow the EDA checklist from week 3 and the previous assignment. Be
+sure to focus on the key variables.</p>
+<pre class="r"><code># We have already selected the key variables previously
+summary(dat$Alcohol)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   1.300   3.690   5.943   8.893  31.440</code></pre>
+<pre class="r"><code>summary(dat$Life_Expectation)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   40.70   63.20   71.00   69.71   77.40   87.40</code></pre>
+<pre class="r"><code>table(dat$Country)</code></pre>
+<pre><code>## 
+##                      Afghanistan                          Albania 
+##                               40                               40 
+##                          Algeria                          Andorra 
+##                               40                               40 
+##                           Angola              Antigua and Barbuda 
+##                               40                               40 
+##                        Argentina                          Armenia 
+##                               40                               40 
+##                        Australia                          Austria 
+##                               40                               40 
+##                       Azerbaijan                          Bahamas 
+##                               40                               40 
+##                          Bahrain                       Bangladesh 
+##                               40                               40 
+##                         Barbados                          Belarus 
+##                               40                               40 
+##                          Belgium                           Belize 
+##                               40                               40 
+##                            Benin                           Bhutan 
+##                               40                               40 
+##           Bosnia and Herzegovina                         Botswana 
+##                               40                               40 
+##                           Brazil                         Bulgaria 
+##                               40                               40 
+##                     Burkina Faso                          Burundi 
+##                               40                               40 
+##                         Cambodia                         Cameroon 
+##                               40                               40 
+##                           Canada         Central African Republic 
+##                               40                               40 
+##                             Chad                            Chile 
+##                               40                               40 
+##                            China                         Colombia 
+##                               40                               40 
+##                          Comoros                            Congo 
+##                               40                               40 
+##                     Cook Islands                       Costa Rica 
+##                               40                               40 
+##                          Croatia                             Cuba 
+##                               40                               40 
+##                           Cyprus                          Czechia 
+##                               40                               40 
+##                          Denmark                         Djibouti 
+##                               40                               40 
+##                         Dominica               Dominican Republic 
+##                               40                               40 
+##                          Ecuador                            Egypt 
+##                               40                               40 
+##                      El Salvador                Equatorial Guinea 
+##                               40                               40 
+##                          Eritrea                          Estonia 
+##                               40                               40 
+##                         Eswatini                         Ethiopia 
+##                               40                               40 
+##                             Fiji                          Finland 
+##                               40                               40 
+##                           France                            Gabon 
+##                               40                               40 
+##                           Gambia                          Georgia 
+##                               40                               40 
+##                          Germany                            Ghana 
+##                               40                               40 
+##                           Greece                          Grenada 
+##                               40                               40 
+##                        Guatemala                           Guinea 
+##                               40                               40 
+##                    Guinea-Bissau                           Guyana 
+##                               40                               40 
+##                            Haiti                         Honduras 
+##                               40                               40 
+##                          Hungary                          Iceland 
+##                               40                               40 
+##                            India                        Indonesia 
+##                               40                               40 
+##                             Iraq                          Ireland 
+##                               40                               40 
+##                           Israel                            Italy 
+##                               40                               40 
+##                          Jamaica                            Japan 
+##                               40                               40 
+##                           Jordan                       Kazakhstan 
+##                               40                               40 
+##                            Kenya                         Kiribati 
+##                               40                               40 
+##                           Kuwait                       Kyrgyzstan 
+##                               40                               40 
+##                           Latvia                          Lebanon 
+##                               40                               40 
+##                          Lesotho                          Liberia 
+##                               40                               40 
+##                            Libya                        Lithuania 
+##                               40                               40 
+##                       Luxembourg                       Madagascar 
+##                               40                               40 
+##                           Malawi                         Malaysia 
+##                               40                               40 
+##                         Maldives                             Mali 
+##                               40                               40 
+##                            Malta                       Mauritania 
+##                               40                               40 
+##                        Mauritius                           Mexico 
+##                               40                               40 
+##                         Mongolia                       Montenegro 
+##                               40                               26 
+##                          Morocco                       Mozambique 
+##                               40                               40 
+##                          Myanmar                          Namibia 
+##                               40                               40 
+##                            Nauru                            Nepal 
+##                               40                               40 
+##                      Netherlands                      New Zealand 
+##                               40                               40 
+##                        Nicaragua                            Niger 
+##                               40                               40 
+##                          Nigeria                             Niue 
+##                               40                               40 
+##                           Norway                             Oman 
+##                               40                               40 
+##                         Pakistan                           Panama 
+##                               40                               40 
+##                 Papua New Guinea                         Paraguay 
+##                               40                               40 
+##                             Peru                      Philippines 
+##                               40                               40 
+##                           Poland                         Portugal 
+##                               40                               40 
+##                            Qatar                          Romania 
+##                               40                               40 
+##                           Rwanda            Saint Kitts and Nevis 
+##                               40                               40 
+##                      Saint Lucia Saint Vincent and the Grenadines 
+##                               40                               40 
+##                            Samoa            Sao Tome and Principe 
+##                               40                               40 
+##                     Saudi Arabia                          Senegal 
+##                               40                               40 
+##                           Serbia                       Seychelles 
+##                               26                               40 
+##                     Sierra Leone                        Singapore 
+##                               40                               40 
+##                         Slovakia                         Slovenia 
+##                               40                               40 
+##                  Solomon Islands                          Somalia 
+##                               40                               40 
+##                     South Africa                            Spain 
+##                               40                               40 
+##                        Sri Lanka                         Suriname 
+##                               40                               40 
+##                           Sweden                      Switzerland 
+##                               40                               40 
+##                       Tajikistan                         Thailand 
+##                               40                               40 
+##                             Togo                            Tonga 
+##                               40                               40 
+##              Trinidad and Tobago                          Tunisia 
+##                               40                               40 
+##                           Turkey                     Turkmenistan 
+##                               40                               40 
+##                           Tuvalu                           Uganda 
+##                               40                               40 
+##                          Ukraine             United Arab Emirates 
+##                               40                               40 
+##                          Uruguay                       Uzbekistan 
+##                               40                               40 
+##                          Vanuatu                            Yemen 
+##                               40                               40 
+##                           Zambia                         Zimbabwe 
+##                               40                               40</code></pre>
+<pre class="r"><code>table(dat$Year)</code></pre>
+<pre><code>## 
+## 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 
+##  332  332  332  332  332  332  332  336  336  336  336  336  336  336  336  336 
+## 2016 2017 2018 2019 
+##  336  336  336  336</code></pre>
+<pre class="r"><code>table(dat$Sex)</code></pre>
+<pre><code>## 
+## Female   Male 
+##   3346   3346</code></pre>
+<pre class="r"><code># Check NAs
+sum(is.na(dat))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>Base on the summary tables, we did not notcie any missing values or
+data errors.</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+boxplot(dat$Life_Expectation, ylab = &quot;Life Expectation&quot;, 
+        main = &quot;Boxplot of Life Expectation&quot;, col = &quot;Green&quot;) 
+boxplot(dat$Alcohol, ylab = &quot;Alcohol Consumption&quot;, 
+        main = &quot;Boxplot of Alcohol Consumption&quot;, col = &quot;Yellow&quot;)</code></pre>
+<p><img src="life_expectancy_files/figure-html/unnamed-chunk-9-1.png" width="672" />
+From both box plots, we notice that there are some outliers in both
+variables. However, this is expected since there exists people who
+consume more Alcohol and there exists people who have lower Life
+Expectation.</p>
+<p>Visualization Create the following figures and interpret them. Be
+sure to include easily understandable axes, titles, and legends.</p>
+<ol style="list-style-type: decimal">
+<li>Stacked histogram of alcohol consumption by sex. Use different color
+schemes than the ggplot default.</li>
+</ol>
+<pre class="r"><code>dat %&gt;% ggplot(aes(x=Alcohol, fill=Sex)) + geom_histogram(bins = 20, col = &quot;red&quot;) +
+          labs(x = &quot;Alcohol consumption&quot;, y = &quot;Count&quot;, title = &quot;Histogram of alcohol consumption by sex&quot;)</code></pre>
+<p><img src="life_expectancy_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Figure Interpretation: Most People consume alcohol less than 10 unit,
+Females are more likely to drink less alcohol and Males are more likely
+to drink more alcohol</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Facet plot by year for 2000, 2010, and 2019 showing scatterplots
+with regression lines of life expectancy and alcohol consumption</li>
+</ol>
+<pre class="r"><code>dat %&gt;% filter(Year == 2000 | Year == 2010 | Year == 2019) %&gt;% 
+  ggplot(aes(y = Life_Expectation, x = Alcohol, color = Year)) +
+  geom_point() + geom_smooth(method = &quot;lm&quot;) + facet_wrap(~Year) +
+  labs(x = &quot;Alcohol Consumption&quot;, y = &quot;Life Expectancy&quot;, 
+       title = &quot;Scatterplots with regression lines of life expectancy and alcohol consumption&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="life_expectancy_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>Figure Interpretation: For all of these years, Life Expectancy
+increases as Alcohol Consumption increases. The Life Expectancy
+increases by years.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>A linear model of life expectancy as a function of time, adjusted
+for sex. Compare the summary for Canada, and a second country of your
+choice.</li>
+</ol>
+<pre class="r"><code>model_full &lt;- lm(Life_Expectation ~ Year + Sex, data = dat)
+model_Canada &lt;- lm(Life_Expectation ~ Year + Sex, data = dat[dat$Country == &quot;Canada&quot;,])
+model_China &lt;- lm(Life_Expectation ~ Year + Sex, data = dat[dat$Country == &quot;China&quot;,])
+summary(model_full)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Life_Expectation ~ Year + Sex, data = dat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -27.367  -6.413   1.836   6.960  16.682 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -580.19632   38.19150  -15.19   &lt;2e-16 ***
+## Year           0.32467    0.01901   17.08   &lt;2e-16 ***
+## SexMale       -5.06339    0.21900  -23.12   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 8.957 on 6689 degrees of freedom
+## Multiple R-squared:   0.11,  Adjusted R-squared:  0.1097 
+## F-statistic: 413.2 on 2 and 6689 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(model_Canada)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Life_Expectation ~ Year + Sex, data = dat[dat$Country == 
+##     &quot;Canada&quot;, ])
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.53566 -0.17599  0.03276  0.18809  0.46039 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -2.621e+02  1.472e+01  -17.81   &lt;2e-16 ***
+## Year         1.718e-01  7.326e-03   23.46   &lt;2e-16 ***
+## SexMale     -4.465e+00  8.449e-02  -52.85   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2672 on 37 degrees of freedom
+## Multiple R-squared:  0.9891, Adjusted R-squared:  0.9885 
+## F-statistic:  1672 on 2 and 37 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(model_China)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Life_Expectation ~ Year + Sex, data = dat[dat$Country == 
+##     &quot;China&quot;, ])
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.98607 -0.04110  0.07953  0.17883  0.28329 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -5.267e+02  1.368e+01  -38.50   &lt;2e-16 ***
+## Year         3.009e-01  6.807e-03   44.21   &lt;2e-16 ***
+## SexMale     -5.275e+00  7.851e-02  -67.19   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2483 on 37 degrees of freedom
+## Multiple R-squared:  0.9943, Adjusted R-squared:  0.994 
+## F-statistic:  3235 on 2 and 37 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>dat %&gt;% filter(Country == &quot;Canada&quot; | Country == &quot;China&quot;) %&gt;% 
+  ggplot(aes(y = Life_Expectation, x = Year, color = Country)) +
+  geom_point() + geom_smooth(method = &quot;lm&quot;) + facet_wrap(~Sex) +
+  labs(x = &quot;Year&quot;, y = &quot;Life Expectancy&quot;, 
+       title = &quot;Linear Model of life expectancy in Canada &amp; China by Sex and Year&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="life_expectancy_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>Summary: From both linear model and plots, we notice that Male have
+lower Life Expectancy than Female. The Life expecancy is increasing over
+years. Canada has a higher Life expectancy than China, while both
+country have higher Life expectancy than the World Average.</p>
+<ol start="4" style="list-style-type: decimal">
+<li>A barplot of male and female life expectancy for the 10 countries
+with largest discrepancies in 2019.</li>
+</ol>
+<pre class="r"><code>discrepancies &lt;- dat %&gt;% filter(Year == 2019) %&gt;% group_by(Country) %&gt;% 
+  summarise(dis = abs(max(Life_Expectation) - min(Life_Expectation))) %&gt;% 
+  arrange(desc(dis)) 
+
+dat %&gt;% filter(Country %in% head(discrepancies, 10)$Country &amp; Year == 2019) %&gt;% 
+  ggplot(aes(x = Sex, y = Life_Expectation, fill = Sex)) +
+  geom_col() +
+  facet_wrap(~Country) + labs(x = &quot;Sex&quot;, y = &quot;Life Expectation&quot;,
+       title = &quot;Barplot of male and female life expectancy 
+       for the 10 countries with largest discrepancies in 2019&quot;)</code></pre>
+<p><img src="life_expectancy_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Figure Interpretation: Females usually have higher life expectancy
+than Males.</p>
+<ol start="5" style="list-style-type: decimal">
+<li>A boxplot of life expectancy by alcohol consumption level and sex
+for the year 2019.</li>
+</ol>
+<pre class="r"><code>dat %&gt;% filter(Year == 2019) %&gt;% 
+  ggplot(aes(x =consumption_level, y = Life_Expectation, color = Sex, fill = consumption_level)) +
+  geom_boxplot() +
+  facet_wrap(~Sex) + 
+  labs(x = &quot;Consumption Level&quot;, y = &quot;Life Expectation&quot;,
+       title = &quot;Boxplot of life expectancy by alcohol consumption level and sex for the year 2019&quot;)</code></pre>
+<p><img src="life_expectancy_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>Figure Interpretation: People with high alcohol consumption level
+usually have higher life expectancy. People with Low and Median alcohol
+consumption level usually have similar but less life expectancy. Females
+have overall higher life expectancy than males.</p>
+<ol start="6" style="list-style-type: decimal">
+<li>Choose a visualization to examine the association life expectancy
+with alcohol consumption over time.</li>
+</ol>
+<pre class="r"><code>p &lt;- dat %&gt;% ggplot(aes(Alcohol, Life_Expectation, color = Year)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  # Here comes the gganimate specific bits
+  labs(title = &#39;Year: {frame_time}&#39;, x = &#39;Alcohol Consumption&#39;, y = &#39;Life expectancy&#39;) +
+  transition_time(Year) +
+  ease_aes(&#39;linear&#39;) 
+
+animate(p, duration = 5, fps = 20, renderer = gifski_renderer())</code></pre>
+<p><img
+src="life_expectancy_files/figure-html/unnamed-chunk-16-1.gif" /><!-- --></p>
+<pre class="r"><code>anim_save(&quot;output.gif&quot;)</code></pre>
+<p>Figure Interpretation: For all of these years, Life Expectancy
+increases as Alcohol Consumption increases. The Life Expectancy
+increases by years.</p>
+</div>
+<div id="part-3-advanced-regression" class="section level2">
+<h2>Part 3 Advanced Regression</h2>
+<p>Construct a multiple linear regression model to examine the
+association between alcohol consumption and life expectancy, adjusted
+for time and sex. First use time as a linear predictor variable, and
+then fit another model where you put a cubic regression spline on time.
+Provide summaries of your models, plots of the linear and non-linear
+associations, and interpretation of the linear and non-linear
+associations.</p>
+<pre class="r"><code># Multiple Linear Model
+linear_modelA &lt;- lm(Life_Expectation ~ Year + Sex + Alcohol, data = dat)
+summary(linear_modelA)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Life_Expectation ~ Year + Sex + Alcohol, data = dat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -27.421  -5.276   2.071   6.275  16.226 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -581.31471   36.40924  -15.97   &lt;2e-16 ***
+## Year           0.32453    0.01812   17.91   &lt;2e-16 ***
+## SexMale       -8.77330    0.25312  -34.66   &lt;2e-16 ***
+## Alcohol        0.54729    0.02111   25.92   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 8.539 on 6688 degrees of freedom
+## Multiple R-squared:  0.1912, Adjusted R-squared:  0.1909 
+## F-statistic: 527.1 on 3 and 6688 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>dat %&gt;% 
+  ggplot(aes(y = Life_Expectation, x = Alcohol, color = Sex)) +
+  geom_point() + geom_smooth(method = &quot;lm&quot;, col = &quot;Brown&quot;, data = dat[dat$Sex==&quot;Female&quot;,]) + 
+  geom_smooth(method = &quot;lm&quot;, col = &quot;Blue&quot;, data = dat[dat$Sex==&quot;Male&quot;,]) + 
+  facet_wrap(~Year) +
+  labs(x = &quot;Alcohol Consumption&quot;, y = &quot;Life Expectancy&quot;, 
+       title = &quot;Scatterplots with regression lines of life expectancy and alcohol consumption&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;
+## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="life_expectancy_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code># Simple Regression Model on Year
+linear_modelB &lt;- gam(Life_Expectation ~ s(Year, bs=&quot;cr&quot;) + Sex + Alcohol, data = dat)
+summary(linear_modelB)</code></pre>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Life_Expectation ~ s(Year, bs = &quot;cr&quot;) + Sex + Alcohol
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 70.83944    0.15717  450.73   &lt;2e-16 ***
+## SexMale     -8.77330    0.25312  -34.66   &lt;2e-16 ***
+## Alcohol      0.54729    0.02111   25.92   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##         edf Ref.df     F p-value    
+## s(Year)   1      1 320.8  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.191   Deviance explained = 19.1%
+## GCV = 72.965  Scale est. = 72.921    n = 6692</code></pre>
+<pre class="r"><code>resA &lt;- resid(linear_modelA)
+resB &lt;- resid(linear_modelB)
+par(mfrow = c(1, 2))
+plot(dat$Year, resA, main = &quot;residual plot of Model A&quot;, xlab=&quot;Year&quot;, ylab=&quot;Residuals&quot;)
+plot(dat$Year, resB, main = &quot;residual plot of Model B&quot;, xlab=&quot;Year&quot;, ylab=&quot;Residuals&quot;)</code></pre>
+<p><img src="life_expectancy_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre class="r"><code>anova(linear_modelA, linear_modelB)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Res.Df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["RSS"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Sum of Sq"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["F"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"6688","2":"487697.8","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"1"},{"1":"6688","2":"487697.8","3":"5.362381e-09","4":"2.840534e-07","5":"0.72642","6":"5.222842e-08","_rn_":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Interpretation: From the plots, summary, and the ANOVA table of both
+models, we found there is no difference between them, which means there
+is no additional effect if we add a cubic regression spline on Year.
+Overally speaking, both model tells that the life expectation gets
+higher linearly by year, alcohol consumption, and females have higher
+life expectation than males.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

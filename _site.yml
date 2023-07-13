@@ -5,6 +5,10 @@ navbar:
   left:
     - text: "Home"
       href: index.html
+    - text: "Bike Theft"
+      href: bike_theft.html
+    - text: "Life Expectancy vs Alcohol consumption"
+      href: life_expectancy.html
 output:
   html_document:
     theme: cosmo
