@@ -1,11 +1,10 @@
 ---
-title: "Assignment1 - EDA: Bicycle Thefts GTA"
+title: "When and where are bikes most likely to be reported as stolen in Toronto?"
 author: "Steven Liu"
 output:
-  html_document:
-    df_print: paged
-  pdf_document: 
-    fig_width: 7
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
 link-citations: yes
 always_allow_html: true
 ---
@@ -19,9 +18,7 @@ library(car)
 library(cowplot)
 ```
 
-# GOAL: When and where are bikes most likely to be reported as stolen in Toronto?
-
-# Step 1
+## Step 1 - Read Data
 
 First, read in the data. Update the missing data identifiers to NA. Check for import issues (dimensions, headers, footers, variable names and variable types). Check for any data issues (import issues, missing values, data errors) particularly in the key variable we are analyzing. Make sure you write up a summary of all of your findings.
 
@@ -102,9 +99,8 @@ summary(bt$Latitude)
 
 Summary of Step 1: At very beginning, we have read the Bicycle Thefts data and stored it into a data table $bt$. We found our data set contains 30154 observations of 35 variables. By looking at the head and tail of our data, all data points seems reasonable (with no importing issues). Moving closely to the summary of variables (we mainly focus on City, Occurrence_Year, Occurrence_Month, Occurrence_DayOfMonth, Occurrence_DayOfWeek, Occurrence_Hour, Longitude, NeighbourhoodName, Premises_Type, Status, Bike_Colour, Bike_Type), we found that the maximum of Longitude and minimum of Latitude is zero, which is not inside Toronto area. We believe these zero values are the missing data identifiers, therefore replace all of them with NA. We also found on the website that NSA is the missing data identifiers for City & NeighbourhoodName, and UNKOWN is another missing data identifiers for Status. Therefore, we replace all of them with NA. After that, we did not notice any more data errors within our main variables, as there isn't any sign of single point being significantly varied from all other points.
 
-\newpage
 
-# Step 2
+## Step 2 - Clean Data
 
 Clean the data -- keep only necessary data columns and change the names of the key variables so that they are easier to identify. Change the type of key variables from string to factor as appropriate. Identify any outlier reports, and justify how you handle them.
 
@@ -167,9 +163,8 @@ Summary of Step 2: Initially, we select OBJECTID, City, Occurrence_Year, Occurre
 
 We plotted two boxplots of Lattitude and Longitude to see if there exists outlines in our clean data set. It turns out that no observation is far away from the others. Therefore, we believe there is no more outliers in our clean dataset. In fact, all outliers are outside of Toronto, and they have already been filtered out from our clean data set.
 
-\newpage
 
-# Step 3
+## Step 3 - EDA
 
 Explore the main question of interest. Calculate summary statistics for each season (e.g. means, medians, variances) and then conduct some basic analyses that enable you to compare across winter/spring/summer/fall (e.g. t-test, linear regression). Be sure to show the results and write up explanations of what you observe in these data.
 
@@ -211,9 +206,8 @@ ggplot(bt_season, aes(y=count, x=hour)) + geom_point() + facet_wrap(~season) +
 
 Summary of Step 3:
 To further investigate when bike is more likely to be stolen, we have break our data into four categories. We have group December, January, February into Winter; March, April, May into Spring; June, July, August into Summer; and September, October, November into Fall. For each season, we are interesting the amount of bike being stolen per hour to decide if bike stolen depends on the season. Therefore, we group our data by season and day+hour. As a summary, we found that the average number of bike being stolen per hour for winter, spring, summer, fall is 4.45, 5.03, 14.69, 12.72 receptively. By fitting a linear regression model, we found that the $p$ value for each coefficient is close to zero, which saying they are significantly different with each others. Looking more closely at the distribution of number of bikes being stolen across each hour in each season, we found that 17-19 pm is the peak. Therefore, we might say Bikes are more likely to be stolen in Fall/Summer at 17-19 pm.
-\newpage
 
-# Step 4
+## Step 4 - Visualization
 
 Create exploratory plots (boxplots, histograms, time series) of which neighbourhoods and time of day bikes were reported stolen from.
 
@@ -261,10 +255,6 @@ ggplot(data=nb_h, aes(x = hour, y = count, color = neighbourhood)) +
          "Time series of Number of Bike stolen at the Top 9 neighbourhood") +
   theme(plot.title = element_text(hjust = 0.5), legend.position = "none")
 ```
-
-\newpage
-
-# Step 5
 
 Create a basic map in leaflet() that shows the locations of all stolen unicycles (and their colours).
 ```{r}

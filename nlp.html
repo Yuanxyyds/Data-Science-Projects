@@ -12,7 +12,7 @@
 <meta name="author" content="Steven Liu" />
 
 
-<title>Life Expectation vs. Alcohol Assumption</title>
+<title>Predict Clash Royale Player’s attitute toward game from Tweets</title>
 
 <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -347,194 +347,148 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Life Expectation vs. Alcohol
-Assumption</h1>
+<h1 class="title toc-ignore">Predict Clash Royale Player’s attitute
+toward game from Tweets</h1>
 <h4 class="author">Steven Liu</h4>
 
 </div>
 
 
-<div id="eda" class="section level2">
-<h2>EDA</h2>
-<p>The primary questions of interest are: 1. What is the association
-between life expectancy and alcohol consumption? 2. Does this
-association differ by Sex? 3. How has life expectancy and alcohol
-consumption changed over time?</p>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-9-1.png" width="672" />
-From both box plots, we notice that there are some outliers in both
-variables. However, this is expected since there exists people who
-consume more Alcohol and there exists people who have lower Life
-Expectation.</p>
-<p>Stacked histogram of alcohol consumption by sex. Use different color
-schemes than the ggplot default.
-<img src="life_expectancy_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>Figure Interpretation: Most People consume alcohol less than 10 unit,
-Females are more likely to drink less alcohol and Males are more likely
-to drink more alcohol</p>
-<p>Facet plot by year for 2000, 2010, and 2019 showing scatterplots with
-regression lines of life expectancy and alcohol consumption</p>
-<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p>Figure Interpretation: For all of these years, Life Expectancy
-increases as Alcohol Consumption increases. The Life Expectancy
-increases by years.</p>
-<p>A linear model of life expectancy as a function of time, adjusted for
-sex.</p>
-<pre><code>## 
-## Call:
-## lm(formula = Life_Expectation ~ Year + Sex, data = dat)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -27.367  -6.413   1.836   6.960  16.682 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -580.19632   38.19150  -15.19   &lt;2e-16 ***
-## Year           0.32467    0.01901   17.08   &lt;2e-16 ***
-## SexMale       -5.06339    0.21900  -23.12   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 8.957 on 6689 degrees of freedom
-## Multiple R-squared:   0.11,  Adjusted R-squared:  0.1097 
-## F-statistic: 413.2 on 2 and 6689 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = Life_Expectation ~ Year + Sex, data = dat[dat$Country == 
-##     &quot;Canada&quot;, ])
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.53566 -0.17599  0.03276  0.18809  0.46039 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -2.621e+02  1.472e+01  -17.81   &lt;2e-16 ***
-## Year         1.718e-01  7.326e-03   23.46   &lt;2e-16 ***
-## SexMale     -4.465e+00  8.449e-02  -52.85   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.2672 on 37 degrees of freedom
-## Multiple R-squared:  0.9891, Adjusted R-squared:  0.9885 
-## F-statistic:  1672 on 2 and 37 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = Life_Expectation ~ Year + Sex, data = dat[dat$Country == 
-##     &quot;China&quot;, ])
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.98607 -0.04110  0.07953  0.17883  0.28329 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -5.267e+02  1.368e+01  -38.50   &lt;2e-16 ***
-## Year         3.009e-01  6.807e-03   44.21   &lt;2e-16 ***
-## SexMale     -5.275e+00  7.851e-02  -67.19   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.2483 on 37 degrees of freedom
-## Multiple R-squared:  0.9943, Adjusted R-squared:  0.994 
-## F-statistic:  3235 on 2 and 37 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p>Summary: From both linear model and plots, we notice that Male have
-lower Life Expectancy than Female. The Life expecancy is increasing over
-years. Canada has a higher Life expectancy than China, while both
-country have higher Life expectancy than the World Average.</p>
-<p>A barplot of male and female life expectancy for the 10 countries
-with largest discrepancies in 2019.
-<img src="life_expectancy_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<p>Figure Interpretation: Females usually have higher life expectancy
-than Males.</p>
-<p>A boxplot of life expectancy by alcohol consumption level and sex for
-the year 2019.
-<img src="life_expectancy_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p>Figure Interpretation: People with high alcohol consumption level
-usually have higher life expectancy. People with Low and Median alcohol
-consumption level usually have similar but less life expectancy. Females
-have overall higher life expectancy than males.</p>
-<p>A visualization to examine the association life expectancy with
-alcohol consumption over time. <img
-src="life_expectancy_files/figure-html/unnamed-chunk-16-1.gif" /><!-- --></p>
-<p>Figure Interpretation: For all of these years, Life Expectancy
-increases as Alcohol Consumption increases. The Life Expectancy
-increases by years.</p>
+<div id="link-to-project-notebook" class="section level2">
+<h2>Link to Project Notebook</h2>
+<p><a href="">Click here</a> to view Project Notebook, with souce codes
+and all data visualization plots.</p>
 </div>
-<div id="advanced-regression" class="section level2">
-<h2>Advanced Regression</h2>
-<p>Construct a multiple linear regression model to examine the
-association between alcohol consumption and life expectancy, adjusted
-for time and sex. First use time as a linear predictor variable, and
-then fit another model where you put a cubic regression spline on time.
-Provide summaries of your models, plots of the linear and non-linear
-associations, and interpretation of the linear and non-linear
-associations.</p>
-<pre><code>## 
-## Call:
-## lm(formula = Life_Expectation ~ Year + Sex + Alcohol, data = dat)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -27.421  -5.276   2.071   6.275  16.226 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -581.31471   36.40924  -15.97   &lt;2e-16 ***
-## Year           0.32453    0.01812   17.91   &lt;2e-16 ***
-## SexMale       -8.77330    0.25312  -34.66   &lt;2e-16 ***
-## Alcohol        0.54729    0.02111   25.92   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 8.539 on 6688 degrees of freedom
-## Multiple R-squared:  0.1912, Adjusted R-squared:  0.1909 
-## F-statistic: 527.1 on 3 and 6688 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;
-## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<pre><code>## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## Life_Expectation ~ s(Year, bs = &quot;cr&quot;) + Sex + Alcohol
-## 
-## Parametric coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) 70.83944    0.15717  450.73   &lt;2e-16 ***
-## SexMale     -8.77330    0.25312  -34.66   &lt;2e-16 ***
-## Alcohol      0.54729    0.02111   25.92   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Approximate significance of smooth terms:
-##         edf Ref.df     F p-value    
-## s(Year)   1      1 320.8  &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## R-sq.(adj) =  0.191   Deviance explained = 19.1%
-## GCV = 72.965  Scale est. = 72.921    n = 6692</code></pre>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
-<pre><code>## Analysis of Variance Table
-## 
-## Model 1: Life_Expectation ~ Year + Sex + Alcohol
-## Model 2: Life_Expectation ~ s(Year, bs = &quot;cr&quot;) + Sex + Alcohol
-##   Res.Df    RSS         Df  Sum of Sq      F    Pr(&gt;F)    
-## 1   6688 487698                                           
-## 2   6688 487698 5.3624e-09 2.8405e-07 0.7264 5.223e-08 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>Interpretation: From the plots, summary, and the ANOVA table of both
-models, we found there is no difference between them, which means there
-is no additional effect if we add a cubic regression spline on Year.
-Overally speaking, both model tells that the life expectation gets
-higher linearly by year, alcohol consumption, and females have higher
-life expectation than males.</p>
+<div id="problem-description-and-motivation." class="section level2">
+<h2>Problem description and motivation.</h2>
+<p>The question we want to answer is “Can we use models to predict
+whether a tweet about Clash Royale will either be approval, disapproval,
+or neutral towards the recent game updates and balance?” Knowing how the
+player base reacts to each game update is often a crucial demand for
+every game developer. However, traditional methods of survey usually
+take a period of time and do not provide instant feedback which are
+considered more valuable often, and survey is also very much a passive
+way of collecting data. Other methods like analysis of revenue gain, or
+player count changes are even more on the inefficient side, and would
+require a long wait period before these data can even be collected.
+Thus, analysis of Twitter data would provide a quick and easy access of
+the needed data that offers some insights into the immediate reaction of
+the players as soon as an update is released. Furthermore, building a
+machine learning model classifier could very well take into account the
+fact that they’re a mixture of opinions through designing labels and
+categories to represent different attitudes. Although none analysis have
+been found directly related to data that of the game “Clash Royale”,
+similar analysis on game reviews have appeared at least a few times over
+the course of investigation, for example, “Twitter sentiment analysis of
+game reviews using machine learning techniques”1 is a fairly similar one
+which we will use as comparison throughout this analysis. 1 Kiran, T. D.
+V. et al. “Twitter sentiment analysis of game reviews using machine
+learning techniques.” (2016).</p>
+</div>
+<div id="describe-the-data." class="section level2">
+<h2>Describe the data.</h2>
+<p>Using the Python library ‘Tweepy’, we extracted 397 relevant tweets
+with the search queries “<span class="citation">@ClashRoayle</span>
+Update” and “<span class="citation">@ClashRoyale</span> Balance”, these
+two are the main phrases that players typically include as they tweet
+about the updates. We’ve restricted the search results to tweets only
+for easier analysis purpose and have used the parameter “tweet_mode =
+extended” to disengage the 140 characters limit of the Twitter API.
+Then, we manually labeled the sentiment of the tweets as either ‘0’, for
+being neutral about the update or informative matters like reporting a
+bug, ‘1’ for being in favor/approval of the update, and lastly ‘2’ for
+being disapproving/hating the update. Then we’ve made the tweets into a
+70-30 split for a training and testing set. Some strengths about our
+data are that they’re quite relevant and recent (tweets within 7 days)
+to the topic; they’re all manually labeled, which allows us to use
+supervised learning methods; and lastly, most tweets have “strong
+opinions”, especially for the negative ones where even vulgar languages
+are used, which in turns is actually advantageous for NLP. The
+limitations are in a sense related to the strengths. Manual labeling are
+affected by human inconsistency (which is reduced through having both
+individuals labeling the data together), recent data means that the data
+are collected within a short period of time which make them more prone
+to being biased, lastly, since tweets contains many ambiguous wordings
+involving internet slang, abbreviations, and sometime sarcasms, these
+would’ve likely reduced the performance of our analysis in some degree.
+In comparison, the game review analysis had 21,000 tweets as their data,
+yet they still reported very similar concerns about the limitation of
+their data and the difficulties with tackling these problems.</p>
+</div>
+<div id="exploratory-data-analysis." class="section level2">
+<h2>Exploratory data analysis.</h2>
+<p>After manually labeling all the tweets, we have firstly created a bar
+plot demonstrating the distribution of people’s attitude toward the game
+to have a better understanding with our data. It turns out to be around
+40% tweets are either irrelevant or neutral, and the ratio for both
+positive tweets and negative tweets are 30%. Then, we have performed a
+series of preprocessing steps to transform our data into a
+computer-understandable form while extracting key information from the
+raw dataset. This includes: Tokenization, which we splitted the tweets
+into individual words; URL, special character and stop word removal2,
+which helps us exclude unnecessary (meaningless) words that have no real
+effect on the result; Lemmatization and Lowercase the words, which
+convert all vocabulary to their simplest form to avoid the duplication
+in meaning. Lastly, we have converted these lists of words into a word
+count matrix by using Count Vectorization and a word ratio matrix by
+using TF-IDF so that we have numerical representations of our tweets
+that can be easily fitted into a model.</p>
+</div>
+<div id="machine-learning-model" class="section level2">
+<h2>Machine Learning Model</h2>
+<p>As a main goal for our investigation, we want to explore the best
+model that can categorize the tweets most accurately. Thus, we have
+constructed four different models in which we can make comparisons among
+them to choose the “best”. The first two models are built based on the
+Naive Bayes model. One of them is using the count vector as input and
+the other one is using the TF-IDF as input. The Naive Bayes algorithm
+has constructed a posterior distribution which allows us to predict the
+most 2 We have removed the Top 100 English stop words by applying Python
+package nltk.stopwords</p>
+<p>probable class with the given dataset (count vector). As a condition,
+it is a supervised model which requires the training dataset to be
+labeled. Since our data is properly pre-labeled, the Naive Bayes model
+is an appropriate choice for our research question. As strengths, Naive
+Bayes is highly related to every word feature. However, if we have too
+many unnecessary words, this can also be a weakness which decreases the
+significance of key words. To solve this weakness, we have also
+constructed a Classification Decision Tree with a depth of five. With a
+Classification Tree, we can visualize how each class is being
+categorized under some key words. By using a depth of five, it is still
+related to some of the word features while not getting overfitting. As a
+biggest weakness, the Classification Tree only makes predictions based
+on a small part of word features. But it is still appropriate especially
+for us to visualize our model and it works better when we have limited
+word features. Lastly, we have fitted in a support vector machine model
+in order to compare with our existing models. Similar to the Naive Bayes
+algorithm, SVM also minimizes the error while splitting classes with
+given input. It is another great classification model which has been
+applied in many other NLP researches. For each model, we compute both
+its test accuracy and train accuracy, as well as its confusion matrix to
+test their overall behavior and the evidence of overfitting. In
+addition, we have introduced another variable named “accuracy for class
+1(positive) &amp; 2(negative)” as an indicator to models’ behavior,
+which tests the probability of correctly identifying the positive and
+negative tweets.</p>
+</div>
+<div id="results-and-conclusions." class="section level2">
+<h2>Results and Conclusions.</h2>
+<p>It is evident that our models were, although not in the best forms
+possible, but still to some degree assisted with predicting the
+corresponding attitude of a tweet about the Clash Royale update. Out of
+all the methods, the Naive Bayes classifier with the countvectorizer
+performed the best (Highest overall accuracy and accuracy for class 1
+&amp; 2). It has a train accuracy of 92%, a test accuracy of 67% and a
+test accuraacy on Class 1 &amp; 2 of 61%. Yet all models demonstrate
+signs of overfitting, seen by a large difference between the train and
+test accuracy. This is most likely due to the small dataset that we’ve
+fed into our models and would be better addressed with more data. In
+regards to the initial question, we can claim to have at least found a
+more efficient way to determine the general reactions and feedback of
+the players after an update of Clash Royale, where there are certainly
+still rooms for improvements. Perhaps a smarter EDA process such as
+removing repeated tweets and filtering spam would be a start to
+improving the accuracy.</p>
 </div>
 
 

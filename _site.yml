@@ -5,6 +5,10 @@ navbar:
   left:
     - text: "Home"
       href: index.html
+    - text: "NBA2K Ratings Prediction"
+      href: nba2k.html
+    - text: "NLP-Clash Royale Tweets"
+      href: nlp.html
     - text: "Bike Theft"
       href: bike_theft.html
     - text: "Life Expectancy vs Alcohol consumption"

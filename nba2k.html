@@ -12,7 +12,7 @@
 <meta name="author" content="Steven Liu" />
 
 
-<title>Life Expectation vs. Alcohol Assumption</title>
+<title>Predict NBA2K Players’ Rating based on Regular season stats</title>
 
 <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -347,194 +347,35 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Life Expectation vs. Alcohol
-Assumption</h1>
+<h1 class="title toc-ignore">Predict NBA2K Players’ Rating based on
+Regular season stats</h1>
 <h4 class="author">Steven Liu</h4>
 
 </div>
 
 
-<div id="eda" class="section level2">
-<h2>EDA</h2>
-<p>The primary questions of interest are: 1. What is the association
-between life expectancy and alcohol consumption? 2. Does this
-association differ by Sex? 3. How has life expectancy and alcohol
-consumption changed over time?</p>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-9-1.png" width="672" />
-From both box plots, we notice that there are some outliers in both
-variables. However, this is expected since there exists people who
-consume more Alcohol and there exists people who have lower Life
-Expectation.</p>
-<p>Stacked histogram of alcohol consumption by sex. Use different color
-schemes than the ggplot default.
-<img src="life_expectancy_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>Figure Interpretation: Most People consume alcohol less than 10 unit,
-Females are more likely to drink less alcohol and Males are more likely
-to drink more alcohol</p>
-<p>Facet plot by year for 2000, 2010, and 2019 showing scatterplots with
-regression lines of life expectancy and alcohol consumption</p>
-<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p>Figure Interpretation: For all of these years, Life Expectancy
-increases as Alcohol Consumption increases. The Life Expectancy
-increases by years.</p>
-<p>A linear model of life expectancy as a function of time, adjusted for
-sex.</p>
-<pre><code>## 
-## Call:
-## lm(formula = Life_Expectation ~ Year + Sex, data = dat)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -27.367  -6.413   1.836   6.960  16.682 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -580.19632   38.19150  -15.19   &lt;2e-16 ***
-## Year           0.32467    0.01901   17.08   &lt;2e-16 ***
-## SexMale       -5.06339    0.21900  -23.12   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 8.957 on 6689 degrees of freedom
-## Multiple R-squared:   0.11,  Adjusted R-squared:  0.1097 
-## F-statistic: 413.2 on 2 and 6689 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = Life_Expectation ~ Year + Sex, data = dat[dat$Country == 
-##     &quot;Canada&quot;, ])
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.53566 -0.17599  0.03276  0.18809  0.46039 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -2.621e+02  1.472e+01  -17.81   &lt;2e-16 ***
-## Year         1.718e-01  7.326e-03   23.46   &lt;2e-16 ***
-## SexMale     -4.465e+00  8.449e-02  -52.85   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.2672 on 37 degrees of freedom
-## Multiple R-squared:  0.9891, Adjusted R-squared:  0.9885 
-## F-statistic:  1672 on 2 and 37 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = Life_Expectation ~ Year + Sex, data = dat[dat$Country == 
-##     &quot;China&quot;, ])
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.98607 -0.04110  0.07953  0.17883  0.28329 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -5.267e+02  1.368e+01  -38.50   &lt;2e-16 ***
-## Year         3.009e-01  6.807e-03   44.21   &lt;2e-16 ***
-## SexMale     -5.275e+00  7.851e-02  -67.19   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.2483 on 37 degrees of freedom
-## Multiple R-squared:  0.9943, Adjusted R-squared:  0.994 
-## F-statistic:  3235 on 2 and 37 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p>Summary: From both linear model and plots, we notice that Male have
-lower Life Expectancy than Female. The Life expecancy is increasing over
-years. Canada has a higher Life expectancy than China, while both
-country have higher Life expectancy than the World Average.</p>
-<p>A barplot of male and female life expectancy for the 10 countries
-with largest discrepancies in 2019.
-<img src="life_expectancy_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<p>Figure Interpretation: Females usually have higher life expectancy
-than Males.</p>
-<p>A boxplot of life expectancy by alcohol consumption level and sex for
-the year 2019.
-<img src="life_expectancy_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p>Figure Interpretation: People with high alcohol consumption level
-usually have higher life expectancy. People with Low and Median alcohol
-consumption level usually have similar but less life expectancy. Females
-have overall higher life expectancy than males.</p>
-<p>A visualization to examine the association life expectancy with
-alcohol consumption over time. <img
-src="life_expectancy_files/figure-html/unnamed-chunk-16-1.gif" /><!-- --></p>
-<p>Figure Interpretation: For all of these years, Life Expectancy
-increases as Alcohol Consumption increases. The Life Expectancy
-increases by years.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>NBA2K series is one of the most trending basketball games worldwide.
+Besides the game itself being fascinating, the NBA2K rating has also
+become the most objective and authorized measure of NBA players’
+ability. This study aims to build a linear regression model to determine
+whether we can predict one’s newest NBA2K rating based on his current
+NBA season stats (per game), including minutes, points, rebounds,
+blocks, rebounds, assists, fouls, and turnover. Currently, the NBA2K
+ratings are manually assigned based on people’s impressions of players.
+By building such a model, we can obtain a statistically significant
+prediction to minimize bias while assigning the ratings. Besides, these
+predictions are useful for audiences to get a better understanding of
+players’ newest ability score; and as a reference in awards (e.g. MVP,
+MIP) selections. Some studies have shown that MVP winners are more
+likely to have more points per minute, points per game, and field goal
+percentage. As an extension, our model wishes to explore more pattern in
+data that reflects players’ overall ability.</p>
 </div>
-<div id="advanced-regression" class="section level2">
-<h2>Advanced Regression</h2>
-<p>Construct a multiple linear regression model to examine the
-association between alcohol consumption and life expectancy, adjusted
-for time and sex. First use time as a linear predictor variable, and
-then fit another model where you put a cubic regression spline on time.
-Provide summaries of your models, plots of the linear and non-linear
-associations, and interpretation of the linear and non-linear
-associations.</p>
-<pre><code>## 
-## Call:
-## lm(formula = Life_Expectation ~ Year + Sex + Alcohol, data = dat)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -27.421  -5.276   2.071   6.275  16.226 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -581.31471   36.40924  -15.97   &lt;2e-16 ***
-## Year           0.32453    0.01812   17.91   &lt;2e-16 ***
-## SexMale       -8.77330    0.25312  -34.66   &lt;2e-16 ***
-## Alcohol        0.54729    0.02111   25.92   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 8.539 on 6688 degrees of freedom
-## Multiple R-squared:  0.1912, Adjusted R-squared:  0.1909 
-## F-statistic: 527.1 on 3 and 6688 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;
-## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<pre><code>## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## Life_Expectation ~ s(Year, bs = &quot;cr&quot;) + Sex + Alcohol
-## 
-## Parametric coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) 70.83944    0.15717  450.73   &lt;2e-16 ***
-## SexMale     -8.77330    0.25312  -34.66   &lt;2e-16 ***
-## Alcohol      0.54729    0.02111   25.92   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Approximate significance of smooth terms:
-##         edf Ref.df     F p-value    
-## s(Year)   1      1 320.8  &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## R-sq.(adj) =  0.191   Deviance explained = 19.1%
-## GCV = 72.965  Scale est. = 72.921    n = 6692</code></pre>
-<p><img src="life_expectancy_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
-<pre><code>## Analysis of Variance Table
-## 
-## Model 1: Life_Expectation ~ Year + Sex + Alcohol
-## Model 2: Life_Expectation ~ s(Year, bs = &quot;cr&quot;) + Sex + Alcohol
-##   Res.Df    RSS         Df  Sum of Sq      F    Pr(&gt;F)    
-## 1   6688 487698                                           
-## 2   6688 487698 5.3624e-09 2.8405e-07 0.7264 5.223e-08 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>Interpretation: From the plots, summary, and the ANOVA table of both
-models, we found there is no difference between them, which means there
-is no additional effect if we add a cubic regression spline on Year.
-Overally speaking, both model tells that the life expectation gets
-higher linearly by year, alcohol consumption, and females have higher
-life expectation than males.</p>
+<div id="download-report" class="section level2">
+<h2>Download Report</h2>
+<p><a href="%22./nba2k.pdf%22">Download Report</a></p>
 </div>
 
 

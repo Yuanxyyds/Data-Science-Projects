@@ -1,0 +1,398 @@
+---
+title: "FinalProjectPart1"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+```{r setup, include=FALSE}
+library(dplyr)
+library(car)
+```
+# PART 1 EDA 
+## Load Datasets
+```{r}
+stats <- read.csv("nba2021-2022.csv")
+rating <- read.csv("nba2k22.csv")
+```
+
+## Summarizing Datasets
+
+```{r cars}
+summary(stats)
+summary(rating)
+```
+
+## Modifying stats dataset, Making One row per player. (Exclude Team, Position)
+
+```{r pressure, echo=FALSE}
+stats_per_player = stats %>% group_by(Player)  %>% filter(G >= max(G)) %>%
+                    summarise(Age = Age,
+                              Games_played = G,
+                              Game_starting = GS,
+                              Min_played = MP,
+                              Field_Goal_Made = FG,
+                              Field_Goal_Attempt = FGA,
+                              Field_Goal_Percentage = Field_Goal_Made/Field_Goal_Attempt,
+                              Three_Point_Made = X3P,
+                              Three_Point_Attempt = X3PA,
+                              Three_Point_Percentage = Three_Point_Made / Three_Point_Attempt,
+                              Two_Point_Made = X2P,
+                              Two_Point_Attempt = X2PA,
+                              Two_Point_Percentage = Two_Point_Made / Two_Point_Attempt,
+                              eFG = (Two_Point_Made + 0.5 * Three_Point_Made)/Field_Goal_Attempt,
+                              Free_Throw_Made = FT,
+                              Free_Throw_Attempt = FTA,
+                              Free_Throw_Percentage = Free_Throw_Made/Free_Throw_Attempt,
+                              Offence_Rebound = ORB,
+                              Defense_Rebound = DRB,
+                              Total_Rebound = Offence_Rebound + Defense_Rebound,
+                              Assist = AST,
+                              Steal = STL,
+                              Block = BLK,
+                              Turn_Over = TOV,
+                              Foul = PF,
+                              PTS = PTS,
+                              )
+ 
+```
+## Replace NA value with 0
+```{r}
+stats_per_player[is.na(stats_per_player)] <- 0
+```
+## Merge Rating and Stats
+```{r}
+stats_with_rating = merge(rating, stats_per_player, by="Player")
+```
+
+## Summarizing Combined Dataset
+```{r}
+summary(stats_with_rating)
+```
+
+## Summarizing chosen variables
+```{r, fig.cap="Scattor Plot of Rating vs All Predictor Variables", fig.height=8}
+par(mfrow = c(4, 3))
+plot(stats_with_rating$Age, stats_with_rating$Rating,  ylab = 'Rating', xlab = 'Age', main = "Rating vs Age")
+plot(stats_with_rating$Min_played, stats_with_rating$Rating, ylab = 'Rating', xlab = 'Min_played', main = "Rating vs Min_played")
+plot(stats_with_rating$PTS, stats_with_rating$Rating, ylab = 'Rating', xlab = 'PTS', main = "Rating vs PTS")
+plot(stats_with_rating$Total_Rebound, stats_with_rating$Rating, ylab = 'Rating', xlab = 'Total_Rebound', main = "Rating vs Total_Rebound")
+plot(stats_with_rating$Assist, stats_with_rating$Rating, ylab = 'Rating', xlab = 'Assist', main = "Rating vs Assist")
+plot(stats_with_rating$Steal, stats_with_rating$Rating, ylab = 'Rating', xlab = 'Steal', main = "Rating vs Steal")
+plot(stats_with_rating$Block, stats_with_rating$Rating, ylab = 'Rating', xlab = 'Block', main = "Rating vs Block")
+plot(stats_with_rating$Turn_Over, stats_with_rating$Rating, ylab = 'Rating', xlab = 'Turn_Over', main = "Rating vs Turn_Over")
+plot(stats_with_rating$Foul, stats_with_rating$Rating, ylab = 'Rating', xlab = 'Foul', main = "Rating vs Foul")
+```
+
+
+```{r, fig.cap="Histogram of All Predictor Variables", fig.height=8}
+par(mfrow = c(4, 3))
+hist(stats_with_rating$Age,  ylab = 'count', xlab = 'Age', main = "Dist. of Age")
+hist(stats_with_rating$Min_played, ylab = 'count', xlab = 'Min_played', main = "Dist. of Min_played")
+hist(stats_with_rating$PTS, ylab = 'count', xlab = 'Three_Point_Made', main = "Dist. of PTS")
+hist(stats_with_rating$Total_Rebound, ylab = 'count', xlab = 'Total_Rebound', main = "Dist. of Total_Rebound")
+hist(stats_with_rating$Assist, ylab = 'count', xlab = 'Assist', main = "Dist. of Assist")
+hist(stats_with_rating$Steal, ylab = 'count', xlab = 'Steal', main = "Dist. of Steal")
+hist(stats_with_rating$Block, ylab = 'count', xlab = 'Block', main = "Dist. of Block")
+hist(stats_with_rating$Turn_Over, ylab = 'count', xlab = 'Turn_Over', main = "Dist. of Turn_Over")
+hist(stats_with_rating$Foul, ylab = 'count', xlab = 'Foul', main = "Dist. of Foul")
+```
+
+```{r, fig.cap="Histogram of Response Variable Rating"}
+hist(stats_with_rating$Rating, xlab = "Rating", breaks = 20, ylab = "count", main = "Distribution of Rating")
+```
+
+```{r}
+data <- stats_with_rating[c(1,2,3,6,22,23,24,25,26,27,28)]
+```
+
+Variable | mean (s.d.)|Correlation with response
+---------|-------------|--------------------------
+Min_played| `r round(mean(data$Min_played),3)` (`r round(sd(data$Min_played),3)`)|`r round(cor(data$Min_played, data$Rating),3) `
+PTS | `r round(mean(data$PTS),3)` (`r round(sd(data$PTS),3)`)|`r round(cor(data$PTS, data$Rating),3) `
+Total_Rebound|  `r round(mean(data$Total_Rebound),3)` (`r round(sd(data$Total_Rebound),3)`)|`r round(cor(data$Total_Rebound, data$Rating),3) `
+Assist| `r round(mean(data$Assist),3)` (`r round(sd(data$Assist),3)`)|`r round(cor(data$Assist, data$Rating),3) `
+Steal| `r round(mean(data$Steal),3)` (`r round(sd(data$Steal),3)`)|`r round(cor(data$Steal, data$Rating),3) `
+Block|  `r round(mean(data$Block),3)` (`r round(sd(data$Block),3)`)|`r round(cor(data$Block, data$Rating),3) `
+Turn_Over|  `r round(mean(data$Turn_Over),3)` (`r round(sd(data$Turn_Over),3)`)|`r round(cor(data$Turn_Over, data$Rating),3) `
+Foul|  `r round(mean(data$Foul),3)` (`r round(sd(data$Foul),3)`)|`r round(cor(data$Foul, data$Rating),3) `
+Rating | `r round(mean(data$Rating),3)` (`r round(sd(data$Rating),3)`)|NA
+
+\newpage
+# PART 3 DATA ANALYSIS
+## Splitting 70:30 Dataset
+```{r}
+set.seed(88)
+train <- data[sample(1:nrow(data), 264, replace=F),]
+test <- data[which(!(data$Player %in% train$Player)),]
+```
+
+
+
+## Comparing train,test
+```{r}
+summary(train)
+summary(test)
+```
+## Full model: Fitting
+```{r}
+full <- lm(Rating ~ Min_played + PTS + Total_Rebound + Assist + Steal + Block + Turn_Over + Foul, data=train)
+summary(full)
+```
+
+
+
+## Full Model: Condition & assumption checking
+
+```{r}
+r_f <- full$residuals
+fit_f <- full$fitted.values
+par(mfrow=c(2,2))
+plot(r_f ~ fit_f, main="Residuals vs Fitted values", xlab="Fitted values", ylab="Residuals")
+plot(r_f ~ train$Age)
+plot(r_f ~ train$Min_played)
+plot(r_f ~ train$PTS)
+par(mfrow=c(2,2))
+plot(r_f ~ train$Total_Rebound)
+plot(r_f ~ train$Assist)
+plot(r_f ~ train$Steal)
+plot(r_f ~ train$Block)
+par(mfrow=c(2,2))
+plot(r_f ~ train$Turn_Over)
+plot(r_f ~ train$Foul)
+qqnorm(r_f)
+qqline(r_f)
+par(mfrow=c(2,2))
+plot(train$Rating ~ fit_f, main="Response vs Fitted values", xlab="Fitted values", ylab="Response")
+abline(0,1)
+```
+```{r}
+pairs(train[,-c(1,2)])
+```
+
+## Transformation
+```{r}
+train_adj <- train
+test_adj <- test
+train_adj[train_adj == 0] <- 0.00001
+test_adj[test_adj == 0] <- 0.00001
+transform <- powerTransform(cbind(train_adj[,-c(1,3)]))
+summary(transform)
+```
+```{r}
+train_adj$Rating <- train_adj$Rating**(-3)
+train_adj$PTS <- train_adj$PTS**(0.5)
+train_adj$Total_Rebound <- train_adj$Total_Rebound**(0.5)
+train_adj$Assist <- train_adj$Assist**(0.5)
+train_adj$Steal <- train_adj$Steal**(0.5)
+train_adj$Block <- train_adj$Block**(0.5)
+train_adj$Turn_Over <- train_adj$Turn_Over**(0.5)
+
+test_adj$Rating <- test_adj$Rating**(-3)
+test_adj$PTS <- test_adj$PTS**(0.5)
+test_adj$Total_Rebound <- test_adj$Total_Rebound**(0.5)
+test_adj$Assist <- test_adj$Assist**(0.5)
+test_adj$Steal <- test_adj$Steal**(0.5)
+test_adj$Block <- test_adj$Block**(0.5)
+test_adj$Turn_Over <- test_adj$Turn_Over**(0.5)
+```
+
+
+```{r}
+summary(train_adj)
+summary(test_adj)
+```
+## Full Model - Transformed
+```{r}
+full_t <- lm(Rating ~  Min_played + PTS + Total_Rebound + Assist + Steal + Block + Turn_Over + Foul, data=train_adj)
+summary(full_t)
+```
+
+## Transformed Full Model: Condition & assumption checking
+
+```{r}
+r_ft <- full_t$residuals
+fit_ft <- full_t$fitted.values
+par(mfrow=c(2,2))
+plot(r_ft ~ fit_ft, main="Residuals vs Fitted values", xlab="Fitted values", ylab="Residuals")
+plot(r_ft ~ train_adj$Min_played)
+plot(r_ft ~ train_adj$PTS)
+par(mfrow=c(2,2))
+plot(r_ft ~ train_adj$Total_Rebound)
+plot(r_ft ~ train_adj$Assist)
+
+plot(r_ft ~ train_adj$Steal)
+plot(r_ft ~ train_adj$Block)
+par(mfrow=c(2,2))
+plot(r_ft ~ train_adj$Turn_Over)
+plot(r_ft ~ train_adj$Foul)
+
+qqnorm(r_ft)
+qqline(r_ft)
+par(mfrow=c(2,2))
+plot(train_adj$Rating ~ fit_ft, main="Response vs Fitted values", xlab="Fitted values", ylab="Response")
+abline(0,1)
+pairs(train_adj[,-c(1,2)])
+```
+
+## Check Multicollinearity
+```{r}
+vif(full_t)
+```
+## Reducing Based on vif
+```{r}
+reduced1 <- lm(Rating ~  PTS + Total_Rebound + Assist + Steal + Block + Turn_Over + Foul, data=train_adj)
+summary(reduced1)
+vif(reduced1)
+anova(full_t, reduced1)
+```   
+## Reducing Based on zero-star insignificant predictors
+```{r}
+reduced2 <- lm(Rating ~ PTS + Total_Rebound + Assist + Foul , data=train_adj)
+summary(reduced2)
+vif(reduced2)
+anova(full_t, reduced2)
+```
+
+## Reducing Based on one-star insignificant predictors
+```{r}
+reduced3 <- lm(Rating ~ PTS + Total_Rebound + Assist,  data=train_adj)
+summary(reduced3)
+vif(reduced3)
+anova(full_t, reduced3)
+```
+There are three potential models:
+
+Models | number of predictors |adjusted_$R^2$|AIC|BIC
+------|---------|---------|---------|--------|
+Model1 (Full)|8|`r round(summary(full_t)$adj.r.squared,3)`|`r round(AIC(full_t),3) `|`r round(BIC(full_t),3) `
+Model2|7|`r round(summary(reduced1)$adj.r.squared,3)` |`r round(AIC(reduced1),3)`|`r round(BIC(reduced1),3) `
+Model3 |4| `r round(summary(reduced2)$adj.r.squared,3)`|`r round(AIC(reduced2),3)`|`r round(BIC(reduced2),3) `
+Model4|3|  `r round(summary(reduced3)$adj.r.squared,3)`|`r round(AIC(reduced3),3)`|`r round(BIC(reduced3),3) `
+
+
+## Reduced Model 1: Conditions & Assumptions
+```{r}
+summary(reduced1)
+```
+```{r}
+r_f1 <- reduced1$residuals
+fit_f1 <- reduced1$fitted.values
+par(mfrow=c(2,2))
+plot(r_f1 ~ fit_f1, main="Residuals vs Fitted values", xlab="Fitted values", ylab="Residuals")
+plot(r_f1 ~ train_adj$Age)
+
+par(mfrow=c(2,2))
+plot(r_f1 ~ train_adj$PTS)
+plot(r_f1 ~ train_adj$Total_Rebound)
+plot(r_f1 ~ train_adj$Assist)
+plot(r_f1 ~ train_adj$Steal)
+par(mfrow=c(2,2))
+plot(r_f1 ~ train_adj$Block)
+plot(r_f1 ~ train_adj$Foul)
+qqnorm(r_f1)
+qqline(r_f1)
+plot(train_adj$Rating ~ fit_f1, main="Response vs Fitted values", xlab="Fitted values", ylab="Response")
+abline(0,1)
+```
+
+## Reduced Model 2: Conditions & Assumptions
+```{r}
+summary(reduced2)
+```
+```{r}
+r_f2 <- reduced2$residuals
+fit_f2 <- reduced2$fitted.values
+par(mfrow=c(2,2))
+plot(r_f2 ~ fit_f2, main="Residuals vs Fitted values", xlab="Fitted values", ylab="Residuals")
+plot(r_f2 ~ train_adj$PTS)
+par(mfrow=c(2,2))
+plot(r_f2 ~ train_adj$Total_Rebound)
+plot(r_f2 ~ train_adj$Assist)
+plot(r_f2 ~ train_adj$Foul)
+par(mfrow=c(2,2))
+qqnorm(r_f2)
+qqline(r_f2)
+plot(train_adj$Rating ~ fit_f2, main="Response vs Fitted values", xlab="Fitted values", ylab="Response")
+abline(0,1)
+```
+\newpage
+## Reduced Model 3: Conditions & Assumptions
+```{r}
+summary(reduced3)
+```
+
+```{r, echo=F, fig.height=5}
+r_f3 <- reduced3$residuals
+fit_f3 <- reduced3$fitted.values
+par(mfrow=c(3,2))
+plot(r_f3~ fit_f3, main="Residuals vs Fitted values", xlab="Fitted values", ylab="Residuals")
+plot(r_f3 ~ train_adj$PTS, main="Residuals vs PTS", xlab="PTS", ylab="Residuals")
+plot(r_f3 ~ train_adj$Assist, main="Residuals vs Assist", xlab="Assist", ylab="Residuals")
+plot(r_f3 ~ train_adj$Total_Rebound, main="Residuals vs Total_Rebound", xlab="Total_Rebound", ylab="Residuals")
+qqnorm(r_f3)
+qqline(r_f3)
+plot(train_adj$Rating ~ fit_f3, main="Response vs Fitted values", xlab="Fitted values", ylab="Response")
+abline(0,1)
+```
+
+## Model Comparison
+
+Models | adjusted_$R^2$|AIC|BIC
+------|---------|---------|--------|
+Full|`r round(summary(full_t)$adj.r.squared,3)`|`r round(AIC(full_t),3) `|`r round(BIC(full_t),3) `
+Reduced1| `r round(summary(reduced1)$adj.r.squared,3)` |`r round(AIC(reduced1),3)`|`r round(BIC(reduced1),3) `
+Reduced2 | `r round(summary(reduced2)$adj.r.squared,3)`|`r round(AIC(reduced2),3)`|`r round(BIC(reduced2),3) `
+Reduced3|  `r round(summary(reduced3)$adj.r.squared,3)`|`r round(AIC(reduced3),3)`|`r round(BIC(reduced3),3) `
+
+## Model 2: DFFIT and Cook Distance
+```{r}
+nDF2 <- length(which(abs(dffits(reduced2))> 2*sqrt(5/264)))
+
+D2<- cooks.distance(reduced2)
+nD2 <- length(which(D2 > qf(0.5, 5, 259)))
+```
+## Model 3: DFFIT and Cook Distance
+```{r}
+nDF3 <- length(which(abs(dffits(reduced3))> 2*sqrt(4/264)))
+
+D3 <- cooks.distance(reduced3)
+nD3 <- length(which(D3 > qf(0.5, 4, 260)))
+```
+## Model 2: Test Validation
+```{r}
+test_reduced2 <- lm(Rating ~ PTS + Total_Rebound + Assist + Foul, data=test_adj)
+summary(test_reduced2)
+summary(reduced2)
+vif(test_reduced2)
+
+nDF2t <- length(which(abs(dffits(test_reduced2))> 2*sqrt(5/113)))
+
+D2t <- length(cooks.distance(test_reduced2))
+nD2t <- length(which(D2t > qf(0.5, 5, 108)))
+```
+
+## Model 3: Test Validation
+```{r}
+test_reduced3 <- lm(Rating ~ PTS + Total_Rebound + Assist, data=test_adj)
+summary(test_reduced3)
+summary(reduced3)
+vif(test_reduced3)
+nDF3t <- length(which(abs(dffits(test_reduced3))> 2*sqrt(4/113)))
+
+D3t <- length(cooks.distance(test_reduced3))
+nD3t <- length(which(D3t > qf(0.5, 4, 109)))
+```
+Characteristic | Model 3 (Train) | Model 3 (Test) | Model 4 (Train) | Model 4 (Test)
+---------------|----------------|---------------|-----------------|---------------
+Largest VIF value | `r max(vif(reduced2))` | `r max(vif(test_reduced2))` | `r max(vif(reduced3))` | `r max(vif(test_reduced3))`
+\# Cook's D | `r nD2` | `r nD2t` | `r nD3` | `r nD3t`
+\# DFFITS | `r nDF2` | `r nDF2t` | `r nDF3` | `r nDF3t`
+Violations | none | none | none | none
+---------------|----------------|---------------|-----------------|---------------
+Intercept | 3.4704e-06 $\pm$ 5.18e-08 (\*) | 3.5281e-06 $\pm$ 7.34e-08 (\*) |3.4688e-06 $\pm$ 5.21e-08  (\*) | 3.5163e-06 $\pm$ 7.29e-08  (\*)
+PTS  | -2.2840e-07 $\pm$ 2.66e-08 (\*) |-2.1520e-07 $\pm$ 3.66e-08 (\*)| -2.1810e-07 $\pm$ 2.63e-08  (\*)  | -2.0520e-07 $\pm$ 3.58e-08 (\*)
+Total_Rebound  | -2.3270e-07 $\pm$ 3.89e-08 (\*)|-2.3750e-07 $\pm$ 5.32e-08 (\*)| -1.9480e-07 $\pm$ 3.43e-08 (\*) | -2.0300e-07 $\pm$ 4.54e-08 (\*)
+Assist | -1.2110e-07  $\pm$ 3.64e-08 (\*) |  -1.5980e-07 $\pm$ 5.12e-08(\*) | -1.1790e-07 $\pm$ 3.66e-08 (\*) | -1.5600e-07 $\pm$ 5.12e-08  (\*)
+Foul  | 6.0000e-08 $\pm$ 2.98e-08 (\*)| 5.0000e-08 $\pm$ 4.05e-08  | -  | -
+
