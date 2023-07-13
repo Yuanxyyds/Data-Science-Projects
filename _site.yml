@@ -1,0 +1,11 @@
+name: "Data Science Projects Demo"
+output_dir: "."
+navbar:
+  title: "Data Science Projects Demo"
+  left:
+    - text: "Home"
+      href: index.html
+output:
+  html_document:
+    theme: cosmo
+    css: styles.css

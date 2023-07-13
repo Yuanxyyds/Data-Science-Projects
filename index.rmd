@@ -1,0 +1,34 @@
+---
+title: "Data Science Projects/School Assignment Demo"
+author: "Steven Liu"
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+---
+
+## Introduction
+
+Welcome! On this page, you will find an assortment of my data science projects and assignments, showcasing the cool and diverse work I have done in the field. Feel free to explore and discover the exciting data-driven insights and analyses I have developed.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = TRUE)
+library(ggplot2)
+```
+
+
+```{r}
+data <- data.frame(
+  category = c( "Sleep","Working", "Working..."),
+  value1 = c(10, 20, 25),
+  value2 = c(5, 8, 12)
+)
+
+
+ggplot(data, aes(category, fill = category)) +
+  geom_bar(aes(y = value1), stat = "identity") +
+  geom_bar(aes(y = value2), stat = "identity", color = "white") +
+  labs(x = "About Me", y = "Scale") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
