@@ -1,6 +1,6 @@
 # Data-Science-Projects
 
-Welcome to my data science project showcase website! Here, I have curated a collection of fascinating data-driven projects, all created using R Markdown.
+Welcome to my data science project showcase website! Here, I have curated a collection of fascinating data-driven projects, all created using R Markdown. Link: https://yuanxyyds.github.io/Data-Science-Projects/
 
 Predict NBA Player's NBA2K Rating from their Regular Season Stat:
 Discover how we utilized advanced statistical modeling techniques to predict NBA players' NBA2K ratings based on their regular season statistics. Explore the insights we gained and visualize the performance patterns that contribute to player ratings.
